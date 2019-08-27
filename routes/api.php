@@ -23,6 +23,8 @@ Route::post('login', 'UsersController@login');
 
 Route::apiResource('user', 'UsersController', ['except' => ['store']])->middleware('check.user');
 
+Route::apiResource('product', 'ProductsController', ['except', ['index', 'show']])->middleware('check.user');
+
 Route::get('product' , 'ProductsController@index');
 Route::get('product/{id}' , 'ProductsController@show');
 Route::get('{user}/product', 'ProductsController@userProducts');
