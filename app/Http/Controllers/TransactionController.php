@@ -25,6 +25,7 @@ class TransactionController extends Controller
             'quantity' => 'required|integer|min:1'
         ];
         $validator = Validator::make($request->all(), $rules);
+        // Not "failed()" !!!
         if($validator->fails()){
             return response(['message' => $validator->errors()]);
         }
