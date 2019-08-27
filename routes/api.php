@@ -29,7 +29,7 @@ Route::get('product/search/', 'SearchController@searchProducts');
 
 Route::get('product' , 'ProductsController@index');
 Route::get('product/{id}' , 'ProductsController@show');
-Route::get('{user}/product', 'ProductsController@userProducts');
+Route::get('user/{user}/product', 'ProductsController@userProducts');
 Route::post('product', 'ProductsController@store')->middleware('check.user');
 Route::put('product/{id}', 'ProductsController@update')->middleware('check.user');
 Route::delete('product/{id}', 'ProductsController@destory')->middleware('check.user');

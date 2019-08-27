@@ -7,6 +7,7 @@ use App\User;
 use App\WishList;
 use App\Rating;
 use App\Transaction;
+use App\Category;
 
 class Product extends Model
 {
@@ -36,5 +37,9 @@ class Product extends Model
 
     public function transaction(){
         return $this->hasOne(Transaction::class);
+    }
+
+    public function categories(){
+        return $this->hasMany(Category::class);
     }
 }
