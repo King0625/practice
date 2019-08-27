@@ -27,6 +27,8 @@ Route::get('product' , 'ProductsController@index');
 Route::get('product/{id}' , 'ProductsController@show');
 Route::get('{user}/product', 'ProductsController@userProducts');
 
+Route::get('product/search/', 'SearchController@searchProducts');
+
 Route::get('product/{product}/rating', 'RatingController@productRatings');
 Route::post('product/{product}/rating', 'RatingController@rateProduct')->middleware('check.user');
 
