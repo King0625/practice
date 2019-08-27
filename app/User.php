@@ -2,6 +2,10 @@
 
 namespace App;
 
+use App\Rating;
+use App\Product;
+use App\WishList;
+use App\Transaction;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,6 +14,9 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+
+    const ADMIN_USER = true;
+    const REGULAR_USER = false;
     /**
      * The attributes that are mass assignable.
      *
@@ -25,7 +32,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token'
+        'password', 'remember_token', 'api_token'
     ];
 
     /**
@@ -36,4 +43,26 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isSuperUser(){
+        return $this->superuser == User::ADMIN_USER;
+    }
+
+    /* Relationships */
+
+    public function products(){
+        return $this->hasMany(Product::class);
+    }
+
+    public function wishlist(){
+        return $this->hasOne(WishList::class);
+    }
+
+    public function ratings(){
+        return $this->hasMany(Rating::class);
+    }
+
+    public function transactions(){
+        return $this->hasMany(Transaction::class);
+    }
 }

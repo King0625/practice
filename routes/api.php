@@ -13,13 +13,25 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-// Route::get('user', 'UsersController@index')->middleware('check.user');
-Route::get('user', 'UsersController@index')->middleware('check.user');
-Route::get('user/{id}', 'UsersController@show')->middleware('check.user');
-Route::post('user', 'UsersController@store');
-Route::put('user/{id}', 'UsersController@update')->middleware('check.user');
-Route::delete('user/{id}', 'UsersController@destroy')->middleware('check.user');
+
+Route::post('register', 'UsersController@store');
+Route::post('login', 'UsersController@login');
+
+Route::apiResource('user', 'UsersController', ['except' => ['store']])->middleware('check.user');
+
+Route::apiResource('product', 'ProductsController', ['except' => ['index', 'show']])->middleware('check.user');
+Route::apiResource('product', 'ProductsController', ['only' => ['index', 'show']]);
+
+Route::get('product' , 'ProductsController@index');
+Route::get('product/{id}' , 'ProductsController@show');
+Route::get('{user}/product', 'ProductsController@userProducts');
+
+Route::get('product/{product}/rating', 'RatingController@productRatings');
+Route::post('product/{product}/rating', 'RatingController@rateProduct')->middleware('check.user');
+
+Route::get('transaction/{user}/history', 'TransactionController@index')->middleware('check.user');
+Route::post('transaction/{product}', 'TransactionController@store')->middleware('check.user');

@@ -17,14 +17,28 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function login(Request $request){
+        $email = $request->auth_email;
+        $password = $request->auth_password;
+
+        $user = User::where('email', $email)->first();
+        // dd($user);
+        if(!$user){
+            return response()->json(['message' => 'Login failed. Please check email id'], 401);
+        }
+        if(!Hash::check($password, $user->password)){
+            return response()->json(['message' => 'Login failed. Please check password'], 401);
+        }
+        return response()->json(['message' => 'Login successfully', 'api_token' => $user->api_token]);
+    }
+
     public function index()
     {
-        $api_token = request()->header('api_token');
-
+        $auth_user = request()->get('auth_user')->first();
+        // dd($auth_user['superuser']);
         // Check if the user(with that token) is superuser 
-        $user = User::where('api_token', $api_token)->where('superuser',1)->get();
-        if(count($user)){
-            return response()->json(User::get(), 200);
+        if($auth_user['superuser']){
+            return response()->json(['data' => User::get()], 200);
         }
         return response()->json(['message' => 'Request error'], 400);
         
@@ -52,23 +66,20 @@ class UsersController extends Controller
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'max:12', 'confirmed'],
-            'superuser' => ['required', 'boolean'],
-            'api_token' => ['required', 'string']
         ];
         $validator = Validator::make($request->all(), $rules);
         if($validator->failed()){
             return response()->json($validator->errors(), 400);
         }
 
+        $data = $request->all();
+        $data['password'] = Hash::make($data['password']);
+        $data['superuser'] = User::ADMIN_USER;
+        $data['api_token'] = Str::random(60);
         // $user = User::create($request->all());
-        $user = User::create([
-            'name' => request('name'),
-            'email' => request('email'),
-            'password' => Hash::make(request('password')),
-            'superuser' => request('superuser'),
-            'api_token' => Str::random(60),
-        ]);
-        return response()->json($user, 201);
+        $user = User::create($data);
+        return response()->json(['data' => $user, 'api_token' => $user->api_token], 201);
+
     }
 
     /**
@@ -79,18 +90,20 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $api_token = request()->header('api_token');
-        // Check if the user(with that token) is superuser 
-        $user = User::where('api_token', $api_token)->first();
+        $auth_user = request()->get('auth_user')->first();
+        $user = User::find($id);
         // dd($user->id);
-        if($user->id == $id or $user->superuser == 1){
-            if($this->exist($id)){
-                $user = User::find($id);
-                return response()->json($user, 200);
+        if($auth_user['superuser']){
+            if($this->exist($user)){
+                return response()->json(['data' => $user], 200);
+            }else{
+                return response()->json(['message' => 'User not found!!'], 404);            
             }
-            return response()->json(['message' => 'User not found!!'], 404);            
+        }elseif($auth_user['id'] == $id){
+            return response()->json(['data' => $user], 200);
+        }else{
+            return response()->json(['message' => 'Authentication error!!'], 401);
         }
-        return response()->json(['message' => 'Request error!!'], 400);
 
     }
 
@@ -115,28 +128,33 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
-            'name' => ['string', 'min:2', 'max:255'],
-            'email' => ['string', 'email', 'max:255', 'unique:users'],
-            'password' => ['string', 'min:6', 'max:12', 'confirmed'],
-            'superuser' => ['boolean'],
+            'name' => 'string|min:2|max:255',
+            'email' => 'email|max:256|unique:users,email,'.$id,
+            'password' => 'string|min:6|max:12|confirmed',
+            'superuser' => 'boolean',
         ];
         $validator = Validator::make($request->all(), $rules);
         if($validator->failed()){
             return response()->json($validator->errors(), 400);
         }
 
-        $api_token = request()->header('api_token');
+        $auth_user = request()->get('auth_user')->first();
+        $user = User::find($id);
         // Check if the user(with that token) is superuser 
-        $user = User::where('api_token', $api_token)->first();
 
-        if($user->id == $id){
-            $user = User::find($id);
-            
-            $user->update($request->all());
-            return response()->json($user, 200);
+        if($auth_user['superuser']){
+            if(!is_null($user)){
+                $user->update($request->all());
+                return response()->json(['data' => $user], 200);
+            }else{
+                return response()->json(['message' => 'User not found'], 404);
+            }
+        }elseif($auth_user['id'] == $id){
+            return response()->json(['data' => $user], 200);
+        }else{
+            return response()->json(['message' => 'Request error'], 400);
         }
 
-        return response()->json(['message' => 'Request error'], 400);
     }
 
     /**
@@ -147,22 +165,21 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        $api_token = request()->header('api_token');
-        // Check if the user(with that token) is superuser 
-        $user = User::where('api_token', $api_token)->first();
-        
-        if($user->superuser == 1){
-            if($this->exist($id)){
-                $api_token = request()->header('api_token');
-                // Check if the user(with that token) is superuser 
-                $user = User::where('api_token', $api_token)->first();
-                    $user = User::find($id);
-                    $user->delete();
-                    return response()->json(['message' => 'User deleted!!'], 204);
+        $auth_user = request()->get('auth_user')->first();
+        $user = User::find($id);        
+        if($auth_user['superuser']){
+            if($this->exist($user) && !$user['superuser']){
+                $user->delete();
+                return response()->json(['message' => 'User deleted!!'], 200);
+            }else{
+                return response()->json(['message' => 'Delete user failed'], 404);
             }
-            return response()->json(['message' => 'User not found!!'], 404);
+        }elseif($auth_user['id'] == $id){
+            $user->delete();
+            return response()->json(['message' => 'User deleted!!'], 200);
+        }else{
+            return response()->json(['message' => 'Request error!!'], 400);
         }
-        return response()->json(['message' => 'Request error!!'], 400);
         
     }
 
