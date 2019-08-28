@@ -22,7 +22,7 @@ class WishListController extends Controller
         if($auth_user['superuser'] or $auth_user['id'] == $user->id){
             return response(['data' => $user->wishlist()->get()]);
         }
-        // return response(['message' => 'Permission denied!', 'code' => 403]);
+        return response(['message' => 'Permission denied!', 'code' => 403]);
     }
 
     /**
@@ -53,8 +53,7 @@ class WishListController extends Controller
         // dd($product->quantity);
         if($data['quantity'] <= $product->quantity){
             $wishlist = WishList::create($data);
-            // $product->decrement('quantity', $data['quantity']);
-            return response(['data' => $wishlist]);
+            return response(['data' => $wishlist, 'code' => 201]);
         }
         return response(['message' => 'Not enough in stock']);
 
@@ -63,7 +62,6 @@ class WishListController extends Controller
     public function destroy(User $user, WishList $wishlist)
     {
         $auth_user = request()->get('auth_user')->first();
-        // dd($wishlist);
         $wishlist = $user->wishlist()->find($wishlist->id);
         // dd($wishlist);
         if($auth_user['id'] == $user->id){
