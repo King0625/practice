@@ -10,6 +10,9 @@ class Transaction extends Model
 {
     public $guarded = [];
 
+    const TRADED = true;
+    const UNTRADED = false;
+
     /* Relationships */
     public function product(){
         return $this->hasOne(Product::class);
@@ -17,5 +20,9 @@ class Transaction extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function isTraded(){
+        return $this->traded = Transaction::TRADED;
     }
 }
