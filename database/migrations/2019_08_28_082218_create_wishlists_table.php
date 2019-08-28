@@ -20,6 +20,7 @@ class CreateWishListsTable extends Migration
             $table->string('product_name');
             $table->float('single_price');
             $table->integer('quantity')->default(1);
+            $table->float('total_price');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

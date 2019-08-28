@@ -48,6 +48,7 @@ class WishListController extends Controller
         $data['product_id'] = $product->id;
         $data['product_name'] = $product->name;
         $data['single_price'] = $product->price;
+        $data['total_price'] = $data['quantity'] * $data['single_price'];
         $data['user_id'] = $auth_user->id;
         
         // dd($product->quantity);
