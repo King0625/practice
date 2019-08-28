@@ -36,6 +36,8 @@ class TransactionController extends Controller
         $data['price'] = $product->price;
         $data['total_price'] = $data['quantity'] * $data['price'];
         $data['user_id'] = $auth_user->id;
+        $data['traded'] = Transaction::UNTRADED;
+        
         // dd($product->quantity);
         if($data['quantity'] <= $product->quantity){
             $transaction = Transaction::create($data);
