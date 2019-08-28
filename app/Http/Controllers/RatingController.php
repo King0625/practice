@@ -20,13 +20,13 @@ class RatingController extends Controller
         $auth_user = request()->get('auth_user')->first();
         // dd($auth_user);
         $rules = [
-            'rating' => 'required|float',
+            'rating' => 'required|numeric|min:0|max:5',
             'comment' => 'string'
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
-        if($validator->failed()){
+        if($validator->fails()){
             return response(['message' => $validator->errors()]);
         }
 

@@ -32,7 +32,7 @@ Route::get('product/{id}' , 'ProductsController@show');
 Route::get('user/{user}/product', 'ProductsController@userProducts');
 Route::post('product', 'ProductsController@store')->middleware('check.user');
 Route::put('product/{id}', 'ProductsController@update')->middleware('check.user');
-Route::delete('product/{id}', 'ProductsController@destory')->middleware('check.user');
+Route::delete('product/{id}', 'ProductsController@destroy')->middleware('check.user');
 
 
 Route::get('product/{product}/rating', 'RatingController@productRatings');

@@ -104,11 +104,11 @@ class ProductsController extends Controller
 
         if($auth_user['superuser']){
             if(!is_null($product)){
-                if($product->user_id = $auth_user['id']){
+                if($product->user_id == $auth_user['id']){
                     $product->update($request->all());
                     return response()->json(['updated' => $product], 200);
                 }else{
-                    return resposne(['message' => 'Permission denied']);
+                    return response(['message' => 'Permission denied']);
                 }
             }else{
                 return response()->json(['message' => 'Product not found!'], 404);
@@ -130,7 +130,7 @@ class ProductsController extends Controller
 
         if($auth_user['superuser']){
             if(!is_null($product)){
-                if($product->id = $auth_user['id']){
+                if($product->user_id == $auth_user['id']){
                     $product->delete();
                     return response()->json(['message' => 'Product deleted'], 200);
                 }else{

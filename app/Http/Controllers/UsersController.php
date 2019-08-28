@@ -74,7 +74,7 @@ class UsersController extends Controller
 
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
-        $data['superuser'] = User::ADMIN_USER;
+        $data['superuser'] = User::REGULAR_USER;
         $data['api_token'] = Str::random(60);
         // $user = User::create($request->all());
         $user = User::create($data);
@@ -172,7 +172,7 @@ class UsersController extends Controller
                 $user->delete();
                 return response()->json(['message' => 'User deleted!!'], 200);
             }else{
-                return response()->json(['message' => 'Delete user failed'], 404);
+                return response()->json(['message' => 'User not found'], 404);
             }
         }elseif($auth_user['id'] == $id){
             $user->delete();
