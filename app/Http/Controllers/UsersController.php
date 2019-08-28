@@ -143,13 +143,14 @@ class UsersController extends Controller
         // Check if the user(with that token) is superuser 
 
         if($auth_user['superuser']){
-            if(!is_null($user)){
+            if($this->exist($user) && !$user['superuser']){
                 $user->update($request->all());
                 return response()->json(['data' => $user], 200);
             }else{
-                return response()->json(['message' => 'User not found'], 404);
+                return response()->json(['message' => 'User not found or that is a superuser!'], 404);
             }
         }elseif($auth_user['id'] == $id){
+            $user->update($request->all());
             return response()->json(['data' => $user], 200);
         }else{
             return response()->json(['message' => 'Request error'], 400);
@@ -172,7 +173,7 @@ class UsersController extends Controller
                 $user->delete();
                 return response()->json(['message' => 'User deleted!!'], 200);
             }else{
-                return response()->json(['message' => 'User not found'], 404);
+                return response()->json(['message' => 'User not found or that is a superuser'], 404);
             }
         }elseif($auth_user['id'] == $id){
             $user->delete();
