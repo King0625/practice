@@ -1,5 +1,6 @@
 <?php
 
+use App\Transaction;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -21,6 +22,7 @@ class CreateTransactionsTable extends Migration
             $table->float('price');
             $table->integer('quantity')->default(1);
             $table->float('total_price');
+            $table->boolean('traded')->default(Transaction::UNTRADED);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
