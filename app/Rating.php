@@ -8,6 +8,7 @@ use App\User;
 
 class Rating extends Model
 {
+    protected $table = 'ratings';
     protected $guarded = [];
 
     /* Relationships */

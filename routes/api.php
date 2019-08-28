@@ -25,7 +25,7 @@ Route::get('user/{id}', 'UsersController@show')->middleware('check.user');
 Route::put('user/{id}', 'UsersController@update')->middleware('check.user');
 Route::delete('user/{id}', 'UsersController@destroy')->middleware('check.user');
 
-Route::get('product/search/', 'SearchController@searchProducts');
+Route::get('product/search', 'SearchController@searchProducts');
 
 Route::get('product' , 'ProductsController@index');
 Route::get('product/{id}' , 'ProductsController@show');
@@ -40,3 +40,7 @@ Route::post('product/{product}/rating', 'RatingController@rateProduct')->middlew
 
 Route::get('transaction/{user}/history', 'TransactionController@index')->middleware('check.user');
 Route::post('transaction/{product}', 'TransactionController@store')->middleware('check.user');
+
+Route::get('user/{user}/wishlist', 'WishListController@index')->middleware('check.user');
+Route::post('user/wishlist/product/{product}', 'WishListController@store')->middleware('check.user');
+Route::delete('user/{user}/wishlist/{wishlist}', 'WishListController@destroy')->middleware('check.user');

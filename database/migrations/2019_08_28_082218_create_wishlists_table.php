@@ -21,6 +21,9 @@ class CreateWishListsTable extends Migration
             $table->float('single_price');
             $table->integer('quantity')->default(1);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

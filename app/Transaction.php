@@ -8,6 +8,7 @@ use App\User;
 
 class Transaction extends Model
 {
+    protected $table = 'transactions';
     public $guarded = [];
 
     const TRADED = true;

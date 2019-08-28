@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
+use App\User;
 use App\WishList;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class WishListController extends Controller
 {
@@ -12,19 +15,14 @@ class WishListController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $user)
     {
-        //
-    }
+        $auth_user = request()->get('auth_user')->first();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        if($auth_user['superuser'] or $auth_user['id'] == $user->id){
+            return response(['data' => $user->wishlist()->get()]);
+        }
+        // return response(['message' => 'Permission denied!', 'code' => 403]);
     }
 
     /**
@@ -33,53 +31,45 @@ class WishListController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Product $product)
     {
-        //
+        $auth_user = request()->get('auth_user')->first();
+        // dd($auth_user);
+        $rules = [
+            'quantity' => 'required|integer|min:1',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        // Not "failed()" !!!
+        if($validator->fails()){
+            return response(['message' => $validator->errors()]);
+        }
+
+        $data = $request->all();
+        $data['product_id'] = $product->id;
+        $data['product_name'] = $product->name;
+        $data['single_price'] = $product->price;
+        $data['user_id'] = $auth_user->id;
+        
+        // dd($product->quantity);
+        if($data['quantity'] <= $product->quantity){
+            $wishlist = WishList::create($data);
+            // $product->decrement('quantity', $data['quantity']);
+            return response(['data' => $wishlist]);
+        }
+        return response(['message' => 'Not enough in stock']);
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\WishList  $wishList
-     * @return \Illuminate\Http\Response
-     */
-    public function show(WishList $wishList)
+    public function destroy(User $user, WishList $wishlist)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\WishList  $wishList
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(WishList $wishList)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\WishList  $wishList
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, WishList $wishList)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\WishList  $wishList
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(WishList $wishList)
-    {
-        //
+        $auth_user = request()->get('auth_user')->first();
+        // dd($wishlist);
+        $wishlist = $user->wishlist()->find($wishlist->id);
+        // dd($wishlist);
+        if($auth_user['id'] == $user->id){
+            $wishlist->delete();
+            return response(['message' => 'The wished item deleted', 'code' => 204]);
+        }
+        return response(['message' => 'Permission denied', 'code' => 403]);
     }
 }

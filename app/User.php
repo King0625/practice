@@ -14,6 +14,7 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    protected $table = 'users'; 
 
     const ADMIN_USER = true;
     const REGULAR_USER = false;
