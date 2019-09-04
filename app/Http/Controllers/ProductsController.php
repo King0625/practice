@@ -16,7 +16,8 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        return response()->json(['data' => Product::all()], 200);
+        return response()->json(['data' => Product::with('user')->get()], 200);
+        // return response()->json(['data' => Product::all()], 200);
     }
 
 

@@ -12,7 +12,7 @@ class RatingController extends Controller
     
     public function productRatings(Product $product)
     {
-        return response(["Ratings of '" . $product->name . "' from users" => $product->ratings()->get(), 'Average rating' => $product->ratings()->avg('rating')]);
+        return response(["Ratings of '" . $product->name . "' from users" => $product->ratings()->with('user')->get(), 'Average rating' => $product->ratings()->avg('rating')]);
     }
 
     public function rateProduct(Request $request, Product $product)

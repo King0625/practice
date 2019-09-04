@@ -9,7 +9,7 @@ class SearchController extends Controller
 {
     public function searchProducts(Request $request){
         $search = $request->input('search');
-        $products = Product::where('name', 'like', '%' . $search . '%')->get();
+        $products = Product::where('name', 'like', '%' . $search . '%')->with('user')->get();
         if(!count($products)){
             return response(['message' => 'Query not found!']);
         }

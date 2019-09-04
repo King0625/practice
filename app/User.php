@@ -18,6 +18,13 @@ class User extends Authenticatable
 
     const ADMIN_USER = true;
     const REGULAR_USER = false;
+
+    // public function getRouteKeyName()
+    // {
+    //     return 'name';
+    // }
+
+
     /**
      * The attributes that are mass assignable.
      *
