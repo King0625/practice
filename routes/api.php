@@ -44,3 +44,7 @@ Route::post('transaction/{product}', 'TransactionController@store')->middleware(
 Route::get('user/{user}/wishlist', 'WishListController@index')->middleware('check.user');
 Route::post('user/wishlist/product/{product}', 'WishListController@store')->middleware('check.user');
 Route::delete('user/{user}/wishlist/{wishlist}', 'WishListController@destroy')->middleware('check.user');
+
+Route::get('categories', 'CategoryController@index');
+Route::get('categories/{id}/products', 'CategoryController@productIndex');
+Route::post('categories', 'CategoryController@store')->middleware('check.user');

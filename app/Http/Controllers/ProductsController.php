@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Category;
 use App\Product;
 use App\User;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        return response()->json(['data' => Product::with('user')->get()], 200);
+        return response()->json(['data' => Product::with('user', 'categories')->get()], 200);
         // return response()->json(['data' => Product::all()], 200);
     }
 
@@ -54,10 +55,15 @@ class ProductsController extends Controller
         $data['available'] = Product::AVAILABLE;
         $data['user_id'] = $auth_user['id'];
 
+        $category1 = $request->input('cat1');
+        $category2 = $request->input('cat2');
+        $categories = Category::find([$category1, $category2]);
+
         if($auth_user['superuser']){
             $product = Product::create($data);
+            $product->categories()->attach($categories);
 
-            return response()->json(['data' => $data, 'seller' => User::find($data['user_id'])], 201);
+            return response()->json(['data' => $product, 'categories' => $product->categories()->get(), 'seller' => User::find($data['user_id'])], 201);
         }
         return response()->json(['message' => 'Authentication error'], 401);
     }
