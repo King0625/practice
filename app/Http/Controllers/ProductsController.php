@@ -115,19 +115,17 @@ class ProductsController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        if($auth_user['superuser']){
-            if(!is_null($product)){
-                if($product->user_id == $auth_user['id']){
-                    $product->update($request->all());
-                    return response()->json(['updated' => $product], 200);
-                }else{
-                    return response(['message' => 'Permission denied']);
-                }
+        // $this->authorize('update', $product);
+        if(!is_null($product)){
+            if($auth_user->can('update', $product)){
+                $product->update($request->all());
+                return response()->json(['updated' => $product], 200);
             }else{
-                return response()->json(['message' => 'Product not found!'], 404);
+                return response(['message' => 'Permission denied']);
             }
+        }else{
+            return response()->json(['message' => 'Product not found!'], 404);
         }
-        return response()->json(['message' => 'Authentication error!'], 401);
     }
 
     /**
@@ -141,19 +139,16 @@ class ProductsController extends Controller
         $auth_user = request()->get('auth_user')->first();
         $product = Product::find($id);
 
-        if($auth_user['superuser']){
-            if(!is_null($product)){
-                if($product->user_id == $auth_user['id']){
-                    $product->delete();
-                    return response()->json(['message' => 'Product deleted'], 200);
-                }else{
-                    return response(['message' => 'Permission denied']);
-                }
+        if(!is_null($product)){
+            if($auth_user->can('delete', $product)){
+                $product->delete();
+                return response()->json(['message' => 'Product deleted'], 200);
             }else{
-                return response()->json(['message' => 'Product not found!'], 404);
+                return response(['message' => 'Permission denied']);
             }
+        }else{
+            return response()->json(['message' => 'Product not found!'], 404);
         }
-        return response()->json(['message' => 'Authentication error!'], 401);
 
     }
 }
