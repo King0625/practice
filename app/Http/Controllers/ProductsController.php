@@ -44,23 +44,30 @@ class ProductsController extends Controller
             'name' => 'required|min:2|max:255',
             'description' => 'required|max:1000',
             'price' => 'required|numeric|min:1|max:99.99',
-            'quantity' => 'required|integer|min:1|max:50'
+            'quantity' => 'required|integer|min:1|max:50',
         ];
+        // dd($request->only(['name', 'description', 'price', 'quantity']));
+
         $validator = Validator::make($request->all(), $rules);
         // dd($rules);
         if($validator->fails()){
             return response()->json($validator->errors(), 400);
         }
-        $data = $request->all();
+        $data = $request->only(['name', 'description', 'price', 'quantity']);
         $data['available'] = Product::AVAILABLE;
         $data['user_id'] = $auth_user['id'];
 
-        $category1 = $request->input('cat1');
-        $category2 = $request->input('cat2');
-        $categories = Category::find([$category1, $category2]);
-
+        // dd($data);
         if($auth_user['superuser']){
             $product = Product::create($data);
+
+            $category1 = $request->input('cat1');
+            $category2 = $request->input('cat2');
+            $categories = Category::find([$category1, $category2]);
+            if(!$category1){
+                return response(['message' => 'You must assign at least one category']);
+            }
+            
             $product->categories()->attach($categories);
 
             return response()->json(['data' => $product, 'categories' => $product->categories()->get(), 'seller' => User::find($data['user_id'])], 201);
@@ -102,7 +109,6 @@ class ProductsController extends Controller
             'description' => 'required|max:1000',
             'price' => 'numeric|min:1|max:99.99',
             'quantity' => 'integer|min:1|max:50',
-            'superuser' => 'boolean'
         ];
         $validator = Validator::make($request->all(), $rules);
         if($validator->fails()){
