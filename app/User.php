@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Rating;
+use App\Profile;
 use App\Product;
 use App\WishList;
 use App\Transaction;
@@ -72,5 +73,9 @@ class User extends Authenticatable
 
     public function transactions(){
         return $this->hasMany(Transaction::class);
+    }
+
+    public function profile(){
+        return $this->belongsTo(Profile::class);
     }
 }
