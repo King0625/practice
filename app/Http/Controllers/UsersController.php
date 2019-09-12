@@ -79,7 +79,10 @@ class UsersController extends Controller
         $data['api_token'] = Str::random(60);
         // $user = User::create($request->all());
         $user = User::create($data);
-        Profile::create($request->only(['username']));
+        
+        $profile_data = $request->only(['username']);
+        $profile_data['user_id'] = $user->id;
+        Profile::create();
         return response()->json(['data' => $user, 'api_token' => $user->api_token], 201);
 
     }
