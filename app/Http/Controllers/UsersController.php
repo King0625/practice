@@ -64,7 +64,7 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => ['required', 'string', 'min:2', 'max:255'],
+            'username' => ['required', 'string', 'min:2', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'max:12', 'confirmed'],
         ];
@@ -79,7 +79,7 @@ class UsersController extends Controller
         $data['api_token'] = Str::random(60);
         // $user = User::create($request->all());
         $user = User::create($data);
-        Profile::create($request->only(['name']));
+        Profile::create($request->only(['username']));
         return response()->json(['data' => $user, 'api_token' => $user->api_token], 201);
 
     }
@@ -130,7 +130,7 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
-            'name' => 'string|min:2|max:255',
+            'username' => 'string|min:2|max:255',
             'email' => 'email|max:256|unique:users,email,'.$id,
             'password' => 'string|min:6|max:12|confirmed',
             'superuser' => 'boolean',
