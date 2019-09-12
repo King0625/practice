@@ -106,7 +106,7 @@ class ProductsController extends Controller
         $product = Product::find($id);
         $rules = [
             'name' => 'min:2|max:255',
-            'description' => 'required|max:1000',
+            'description' => 'max:1000',
             'price' => 'numeric|min:1|max:99.99',
             'quantity' => 'integer|min:1|max:50',
         ];
