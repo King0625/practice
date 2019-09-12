@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Profile;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -78,6 +79,7 @@ class UsersController extends Controller
         $data['api_token'] = Str::random(60);
         // $user = User::create($request->all());
         $user = User::create($data);
+        Profile::create($request->only(['name']));
         return response()->json(['data' => $user, 'api_token' => $user->api_token], 201);
 
     }
