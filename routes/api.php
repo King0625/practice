@@ -26,7 +26,7 @@ Route::put('user/{id}', 'UsersController@update')->middleware('check.user');
 Route::delete('user/{id}', 'UsersController@destroy')->middleware('check.user');
 
 Route::get('profile/{id}', 'ProfileController@show');
-Route::put('profile/{id}', 'ProfileController@show')->middleware('check.user');
+Route::put('profile/{id}', 'ProfileController@update')->middleware('check.user');
 
 Route::get('product/search', 'SearchController@searchProducts');
 
