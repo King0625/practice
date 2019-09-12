@@ -18,9 +18,9 @@ class ProfileController extends Controller
      */
     public function show($id)
     {
-        $user = User::find($id);
-        if(!is_null($user)){
-            return response(['data' => $user->profile()->get()]);
+        $profile = Profile::where('user_id', $id)->first();
+        if(!is_null($profile)){
+            return response(['data' => $profile->get()]);
         }
         return response(['message' => 'User not found']);
     }
