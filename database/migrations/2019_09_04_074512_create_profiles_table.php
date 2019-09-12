@@ -21,8 +21,9 @@ class CreateProfilesTable extends Migration
             $table->integer('age');
             $table->datetime('birthday');
             $table->string('gender');
+            $table->string('avatar');
             $table->string('about_me');
-            $table->boolean('is_public')->default(0);
+            $table->integer('privacy')->default(0);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
