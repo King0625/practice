@@ -17,13 +17,13 @@ class CreateProfilesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->string('username');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->integer('age');
-            $table->datetime('birthday');
-            $table->string('gender');
-            $table->string('avatar');
-            $table->string('about_me');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->integer('age')->nullable();
+            $table->datetime('birthday')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('avatar')->default('default.jpg');
+            $table->string('about_me')->nullable();
             $table->integer('privacy')->default(0);
             $table->timestamps();
 
