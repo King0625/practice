@@ -27,7 +27,7 @@ class CategoryController extends Controller
         //     'name' => 'required|min:2|max:255'
         // ];
         // $validator = Validator::make($request->all(), $rules);
-        // if($validator->failed()){
+        // if($validator->fails()){
         //     return response()->json($validator->errors(), 400);
         // }
         

@@ -69,7 +69,7 @@ class UsersController extends Controller
             'password' => ['required', 'string', 'min:6', 'max:12', 'confirmed'],
         ];
         $validator = Validator::make($request->all(), $rules);
-        if($validator->failed()){
+        if($validator->fails()){
             return response()->json($validator->errors(), 400);
         }
 
@@ -139,7 +139,7 @@ class UsersController extends Controller
             'superuser' => 'boolean',
         ];
         $validator = Validator::make($request->all(), $rules);
-        if($validator->failed()){
+        if($validator->fails()){
             return response()->json($validator->errors(), 400);
         }
 
