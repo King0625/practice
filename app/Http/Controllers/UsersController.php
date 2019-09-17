@@ -148,7 +148,7 @@ class UsersController extends Controller
         // Check if the user(with that token) is superuser 
 
         if($auth_user['superuser']){
-            if($this->exist($user) && !$user['superuser']){
+            if(($this->exist($user) && !$user['superuser']) || $auth_user['id'] == $id){
                 $user->update($request->all());
                 return response()->json(['data' => $user], 200);
             }else{
