@@ -174,7 +174,7 @@ class UsersController extends Controller
         $auth_user = request()->get('auth_user')->first();
         $user = User::find($id);        
         if($auth_user['superuser']){
-            if($this->exist($user) && !$user['superuser']){
+            if(($this->exist($user) && !$user['superuser']) || $auth_user['id'] == $id){
                 $user->delete();
                 return response()->json(['message' => 'User deleted!!'], 200);
             }else{
