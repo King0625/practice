@@ -11,12 +11,14 @@
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    return view('welcome');
+});
 
 // Auth::routes();
 
 // Route::get('/home', 'HomeController@index')->name('home');
 
 
+Route::get('/fb/login', 'FbLoginController@loginPage');
+Route::get('/fb/getToken', 'FbLoginController@FbToken');

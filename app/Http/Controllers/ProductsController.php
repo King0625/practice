@@ -22,8 +22,8 @@ class ProductsController extends Controller
     }
 
 
-    public function userProducts($id){
-        $user = User::find($id);
+    public function userProducts($user_id){
+        $user = User::find($user_id);
         if(!is_null($user)){
             return response(['data' => $user->products()->get()]);
         }

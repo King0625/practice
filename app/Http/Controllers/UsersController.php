@@ -30,6 +30,7 @@ class UsersController extends Controller
         if(!Hash::check($password, $user->password)){
             return response()->json(['message' => 'Login failed. Please check password'], 401);
         }
+        // $user->api_token = Str::random(60);
         return response()->json(['message' => 'Login successfully', 'api_token' => $user->api_token]);
     }
 
@@ -75,7 +76,7 @@ class UsersController extends Controller
 
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
-        $data['superuser'] = User::ADMIN_USER;
+        $data['superuser'] = User::REGULAR_USER;
         $data['api_token'] = Str::random(60);
         // $user = User::create($request->all());
         $user = User::create($data);
