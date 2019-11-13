@@ -18,8 +18,8 @@ class CheckUser
         $api_token = $request->bearerToken();
         $auth_user = User::where('api_token', $api_token)->get();
         // dd($auth_user);
-
-        if(!count($auth_user)){
+        // dd($auth_user);
+        if(!count($auth_user) || is_null($api_token)){
             return response()->json(['message' => 'Authentication error'], 401);
         }
         $request->attributes->set('auth_user', $auth_user);
