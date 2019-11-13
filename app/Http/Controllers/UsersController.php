@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Profile;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -19,19 +20,17 @@ class UsersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function login(Request $request){
-        $email = $request->auth_email;
-        $password = $request->auth_password;
+        $credentials = $request->validate([
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+        if(Auth::attempt($credentials)){
+            $user = Auth::user();
+            return response()->json(['message' => 'Login successfully','credential' => User::credential($user->superuser) , 'api_token' => $user->api_token, 'token type' => "Bearer"]);
 
-        $user = User::where('email', $email)->first();
-        // dd($user);
-        if(!$user){
-            return response()->json(['message' => 'Login failed. Please check email id'], 401);
         }
-        if(!Hash::check($password, $user->password)){
-            return response()->json(['message' => 'Login failed. Please check password'], 401);
-        }
-        // $user->api_token = Str::random(60);
-        return response()->json(['message' => 'Login successfully','credential' => User::credential($user->superuser) , 'api_token' => $user->api_token, 'token type' => "Bearer"]);
+        return response(['message' => 'Login failed! Please check email or password!'], 401);
+
     }
 
     public function index()
