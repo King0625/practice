@@ -26,16 +26,22 @@ class UsersController extends Controller
             'password' => ['required', 'string', 'min:6', 'max:12', 'confirmed'],
         ]);
         
-        
         $data['password'] = Hash::make($data['password']);
         $data['superuser'] = User::REGULAR_USER;
         $data['api_token'] = Str::random(60);
+
         $user = User::create($data);
 
         $profile_data = $request->only(['username']);
         $profile_data['user_id'] = $user->id;
+
         Profile::create($profile_data);
-        return response()->json(['message' => 'Register successfully', 'data' => $user, 'api_token' => $user->api_token], 201);
+
+        return response([
+            'message' => 'Register successfully',
+            'data' => $user,
+            'api_token' => $user->api_token
+        ], 201);
 
     }
 
@@ -45,24 +51,36 @@ class UsersController extends Controller
             'email' => 'required',
             'password' => 'required'
         ]);
+
         if(Auth::attempt($credentials)){
             $user = Auth::user();
-            return response()->json(['message' => 'Login successfully','credential' => User::credential($user->superuser) , 'api_token' => $user->api_token, 'token type' => "Bearer"]);
-
+            return response([
+                'message' => 'Login successfully',
+                'credential' => User::credential($user->superuser),
+                'api_token' => $user->api_token,
+                'token type' => "Bearer"
+            ]);
         }
-        return response(['message' => 'Login failed! Please check email or password!'], 401);
+
+        return response([
+            'message' => 'Login failed! Please check email or password!'
+        ], 401);
 
     }
 
     public function index()
     {
         $auth_user = request()->get('auth_user')->first();
-        // dd($auth_user['superuser']);
-        // Check if the user(with that token) is superuser 
+
         if($auth_user['superuser']){
-            return response()->json(['data' => User::get()], 200);
+            return response([
+                'data' => User::get()
+            ]);
         }
-        return response()->json(['message' => 'Request forbidden'], 403);
+
+        return response([
+            'message' => 'Request forbidden'
+        ], 403);
         
     }
 
@@ -75,16 +93,24 @@ class UsersController extends Controller
     public function show($id)
     {
         $user = User::find($id);
+
         if(is_null($user)){
-            return response(['message' => 'User not found!'], 404);
-        }
-        // dd($user->id);
-        $auth_user = request()->get('auth_user')->first();
-        if(!($auth_user['superuser'] || $auth_user['id'] == $id)){
-            return response(['message' => 'Request forbidden!'], 403);
+            return response([
+                'message' => 'User not found!'
+            ], 404);
         }
 
-        return response()->json(['data' => $user], 200);
+        $auth_user = request()->get('auth_user')->first();
+
+        if(!($auth_user['superuser'] || $auth_user['id'] == $id)){
+            return response([
+                'message' => 'Request forbidden!'
+            ], 403);
+        }
+
+        return response([
+            'data' => $user
+        ]);
 
     }
 
@@ -98,14 +124,19 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::find($id);
+
         if(is_null($user)){
-            return response(['message' => 'User not found!'], 404);
+            return response([
+                'message' => 'User not found!'
+            ], 404);
         }
 
         $auth_user = request()->get('auth_user')->first();
-        // dd($auth_user['id'] == $user->id); 
+
         if(!($auth_user['id'] == $user->id)){
-            return response(['message' => 'Request forbidden!'], 403);
+            return response([
+                'message' => 'Request forbidden!'
+            ], 403);
         }
 
         $data = $request->validate([
@@ -115,7 +146,10 @@ class UsersController extends Controller
         ]);
 
         $user->update($data);
-        return response()->json(['data' => $user], 200);
+
+        return response([
+            'data' => $user
+        ]);
 
     }
 
@@ -128,27 +162,35 @@ class UsersController extends Controller
     public function destroy($id)
     {
         $user = User::find($id);        
+
         if(is_null($user)){
-            return response(['message' => 'User not found!'], 404);
+            return response([
+                'message' => 'User not found!'
+            ], 404);
         }
 
         $auth_user = request()->get('auth_user')->first();
 
         if(!$auth_user['id'] == $id){
-            return response(['message' => 'Request forbidden'], 403);
+            return response([
+                'message' => 'Request forbidden'
+            ], 403);
         }
+
         if($user->superuser){
-            return response(['message' => 'Cannot delete a superuser!'], 403);
+            return response([
+                'message' => 'Cannot delete a superuser!'
+            ], 403);
         }
+
+        // To delete a user, you should delete his(or her) profile first
         $profile = Profile::where('user_id', $id)->first();
         $profile->delete();
         $user->delete();
-        return response()->json(['message' => 'User deleted!!'], 200);
-        
-    }
 
-    private function exist($id){
-        $user = User::find($id);
-        return !is_null($user);
+        return response([
+            'message' => 'User deleted!!'
+        ], 200);
+        
     }
 }
