@@ -63,27 +63,22 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
+        $data = $request->validate([
             'username' => ['required', 'string', 'min:2', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'max:12', 'confirmed'],
-        ];
-        $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
-        }
-
-        $data = $request->all();
+        ]);
+        
+        
         $data['password'] = Hash::make($data['password']);
         $data['superuser'] = User::REGULAR_USER;
         $data['api_token'] = Str::random(60);
-        // $user = User::create($request->all());
         $user = User::create($data);
 
         $profile_data = $request->only(['username']);
         $profile_data['user_id'] = $user->id;
         Profile::create($profile_data);
-        return response()->json(['data' => $user, 'api_token' => $user->api_token], 201);
+        return response()->json(['message' => 'Register successfully', 'data' => $user, 'api_token' => $user->api_token], 201);
 
     }
 
