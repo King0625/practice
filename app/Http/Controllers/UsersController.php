@@ -54,6 +54,7 @@ class UsersController extends Controller
 
         if(Auth::attempt($credentials)){
             $user = Auth::user();
+            $user->update(['api_token' => Str::random(60)]);
             return response([
                 'message' => 'Login successfully',
                 'credential' => User::credential($user->superuser),
@@ -66,6 +67,13 @@ class UsersController extends Controller
             'message' => 'Login failed! Please check email or password!'
         ], 401);
 
+    }
+
+    public function logout(){
+        $auth_user = request()->get('auth_user')->first();
+        $auth_user->update(['api_token' => NULL]);
+
+        return response(['message' => 'Logout successfully!']);
     }
 
     public function index()
@@ -93,7 +101,6 @@ class UsersController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-
         if(is_null($user)){
             return response([
                 'message' => 'User not found!'

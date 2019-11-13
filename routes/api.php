@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 
 Route::post('register', 'UsersController@register');
 Route::post('login', 'UsersController@login');
+Route::post('logout', 'UsersController@logout')->middleware('check.user');
 Route::get('users', 'UsersController@index')->middleware('check.user');
 Route::get('users/{id}', 'UsersController@show')->middleware('check.user');
 Route::put('users/{id}', 'UsersController@update')->middleware('check.user');
