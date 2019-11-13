@@ -53,6 +53,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public static function credential($superuser){
+        if($superuser){
+            return 'superuser';
+        }
+        return "regular user";
+    }
+
     public function isSuperUser(){
         return $this->superuser == User::ADMIN_USER;
     }

@@ -31,7 +31,7 @@ class UsersController extends Controller
             return response()->json(['message' => 'Login failed. Please check password'], 401);
         }
         // $user->api_token = Str::random(60);
-        return response()->json(['message' => 'Login successfully', 'api_token' => $user->api_token]);
+        return response()->json(['message' => 'Login successfully','credential' => User::credential($user->superuser) , 'api_token' => $user->api_token, 'token type' => "Bearer"]);
     }
 
     public function index()
