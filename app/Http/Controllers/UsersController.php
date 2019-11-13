@@ -127,21 +127,23 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        $auth_user = request()->get('auth_user')->first();
         $user = User::find($id);        
-        if($auth_user['superuser']){
-            if(($this->exist($user) && !$user['superuser']) || $auth_user['id'] == $id){
-                $user->delete();
-                return response()->json(['message' => 'User deleted!!'], 200);
-            }else{
-                return response()->json(['message' => 'User not found or that is a superuser'], 404);
-            }
-        }elseif($auth_user['id'] == $id){
-            $user->delete();
-            return response()->json(['message' => 'User deleted!!'], 200);
-        }else{
-            return response()->json(['message' => 'Request error!!'], 400);
+        if(is_null($user)){
+            return response(['message' => 'User not found!'], 404);
         }
+
+        $auth_user = request()->get('auth_user')->first();
+
+        if(!$auth_user['id'] == $id){
+            return response(['message' => 'Request forbidden'], 403);
+        }
+        if($user->superuser){
+            return response(['message' => 'Cannot delete a superuser!'], 403);
+        }
+        $profile = Profile::where('user_id', $id)->first();
+        $profile->delete();
+        $user->delete();
+        return response()->json(['message' => 'User deleted!!'], 200);
         
     }
 
