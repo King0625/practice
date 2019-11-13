@@ -22,7 +22,7 @@ class CreateProfilesTable extends Migration
             $table->integer('age')->nullable();
             $table->datetime('birthday')->nullable();
             $table->string('gender')->nullable();
-            $table->string('avatar')->default('default.jpg');
+            $table->string('avatar')->default('storage/avatars/default.jpg');
             $table->string('about_me')->nullable();
             $table->integer('privacy')->default(0);
             $table->timestamps();
