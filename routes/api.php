@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 // });
 
 
-Route::post('register', 'UsersController@store');
+Route::post('register', 'UsersController@register');
 Route::post('login', 'UsersController@login');
 Route::get('user', 'UsersController@index')->middleware('check.user');
 Route::get('user/{id}', 'UsersController@show')->middleware('check.user');
