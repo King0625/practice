@@ -74,20 +74,17 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $auth_user = request()->get('auth_user')->first();
         $user = User::find($id);
-        // dd($user->id);
-        if($auth_user['superuser']){
-            if($this->exist($user)){
-                return response()->json(['data' => $user], 200);
-            }else{
-                return response()->json(['message' => 'User not found!!'], 404);            
-            }
-        }elseif($auth_user['id'] == $id){
-            return response()->json(['data' => $user], 200);
-        }else{
-            return response()->json(['message' => 'Authentication error!!'], 401);
+        if(is_null($user)){
+            return response(['message' => 'User not found!'], 404);
         }
+        // dd($user->id);
+        $auth_user = request()->get('auth_user')->first();
+        if(!($auth_user['superuser'] || $auth_user['id'] == $id)){
+            return response(['message' => 'Request forbidden!'], 403);
+        }
+
+        return response()->json(['data' => $user], 200);
 
     }
 
