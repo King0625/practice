@@ -62,7 +62,7 @@ class UsersController extends Controller
         if($auth_user['superuser']){
             return response()->json(['data' => User::get()], 200);
         }
-        return response()->json(['message' => 'Request error'], 400);
+        return response()->json(['message' => 'Request forbidden'], 403);
         
     }
 
