@@ -20,33 +20,33 @@ use Illuminate\Http\Request;
 
 Route::post('register', 'UsersController@register');
 Route::post('login', 'UsersController@login');
-Route::get('user', 'UsersController@index')->middleware('check.user');
-Route::get('user/{id}', 'UsersController@show')->middleware('check.user');
-Route::put('user/{id}', 'UsersController@update')->middleware('check.user');
-Route::delete('user/{id}', 'UsersController@destroy')->middleware('check.user');
+Route::get('users', 'UsersController@index')->middleware('check.user');
+Route::get('users/{id}', 'UsersController@show')->middleware('check.user');
+Route::put('users/{id}', 'UsersController@update')->middleware('check.user');
+Route::delete('users/{id}', 'UsersController@destroy')->middleware('check.user');
 
-Route::get('profile/{id}', 'ProfileController@show');
-Route::put('profile/{id}', 'ProfileController@update')->middleware('check.user');
+Route::get('profiles/{id}', 'ProfileController@show');
+Route::put('profiles/{id}', 'ProfileController@update')->middleware('check.user');
 
-Route::get('product/search', 'SearchController@searchProducts');
+Route::get('products/search', 'SearchController@searchProducts');
 
-Route::get('product' , 'ProductsController@index');
-Route::get('product/{id}' , 'ProductsController@show');
-Route::get('user/{user_id}/product', 'ProductsController@userProducts');
-Route::post('product', 'ProductsController@store')->middleware('check.user');
-Route::put('product/{id}', 'ProductsController@update')->middleware('check.user');
-Route::delete('product/{id}', 'ProductsController@destroy')->middleware('check.user');
+Route::get('products' , 'ProductsController@index');
+Route::get('products/{id}' , 'ProductsController@show');
+Route::get('users/{user_id}/products', 'ProductsController@userProducts');
+Route::post('products', 'ProductsController@store')->middleware('check.user');
+Route::put('products/{id}', 'ProductsController@update')->middleware('check.user');
+Route::delete('products/{id}', 'ProductsController@destroy')->middleware('check.user');
 
 
-Route::get('product/{product}/rating', 'RatingController@productRatings');
-Route::post('product/{product}/rating', 'RatingController@rateProduct')->middleware('check.user');
+Route::get('products/{product}/rating', 'RatingController@productRatings');
+Route::post('products/{product}/rating', 'RatingController@rateProduct')->middleware('check.user');
 
-Route::get('transaction/{user}/history', 'TransactionController@index')->middleware('check.user');
-Route::post('transaction/{product}', 'TransactionController@store')->middleware('check.user');
+Route::get('transactions/{user}/history', 'TransactionController@index')->middleware('check.user');
+Route::post('transactions/{product}', 'TransactionController@store')->middleware('check.user');
 
-Route::get('user/{user}/wishlist', 'WishListController@index')->middleware('check.user');
-Route::post('user/wishlist/product/{product}', 'WishListController@store')->middleware('check.user');
-Route::delete('user/{user}/wishlist/{wishlist}', 'WishListController@destroy')->middleware('check.user');
+Route::get('users/{user}/wishlists', 'WishListController@index')->middleware('check.user');
+Route::post('users/wishlists/products/{product}', 'WishListController@store')->middleware('check.user');
+Route::delete('users/{user}/wishlists/{wishlist}', 'WishListController@destroy')->middleware('check.user');
 
 Route::get('categories', 'CategoryController@index');
 Route::get('categories/{id}/products', 'CategoryController@productIndex');
