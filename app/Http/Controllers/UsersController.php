@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-use function PHPSTORM_META\type;
 
 class UsersController extends Controller
 {
@@ -127,34 +126,25 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $rules = [
-            'username' => 'string|min:2|max:255',
-            'email' => 'email|max:256|unique:users,email,'.$id,
-            'password' => 'string|min:6|max:12|confirmed',
-            'superuser' => 'boolean',
-        ];
-        $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
+        $user = User::find($id);
+        if(is_null($user)){
+            return response(['message' => 'User not found!'], 404);
         }
 
         $auth_user = request()->get('auth_user')->first();
-        $user = User::find($id);
-        // Check if the user(with that token) is superuser 
-
-        if($auth_user['superuser']){
-            if(($this->exist($user) && !$user['superuser']) || $auth_user['id'] == $id){
-                $user->update($request->all());
-                return response()->json(['data' => $user], 200);
-            }else{
-                return response()->json(['message' => 'User not found or that is a superuser!'], 404);
-            }
-        }elseif($auth_user['id'] == $id){
-            $user->update($request->all());
-            return response()->json(['data' => $user], 200);
-        }else{
-            return response()->json(['message' => 'Request error'], 400);
+        // dd($auth_user['id'] == $user->id); 
+        if(!($auth_user['id'] == $user->id)){
+            return response(['message' => 'Request forbidden!'], 403);
         }
+
+        $data = $request->validate([
+            'username' => 'string|min:2|max:255',
+            'email' => 'email|max:256|unique:users,email,'.$user->id,
+            'password' => 'string|min:6|max:12|confirmed',
+        ]);
+
+        $user->update($data);
+        return response()->json(['data' => $user], 200);
 
     }
 
