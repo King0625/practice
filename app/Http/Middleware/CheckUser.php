@@ -15,7 +15,7 @@ class CheckUser
      */
     public function handle($request, Closure $next)
     {
-        $api_token = request()->header('api_token');
+        $api_token = $request->bearerToken();
         $auth_user = User::where('api_token', $api_token)->get();
         // dd($auth_user);
 
