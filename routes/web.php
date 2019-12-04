@@ -11,6 +11,7 @@
 |
 */
 
+Route::post('email-verify', 'UsersController@emailVerify');
 Route::get('/', function () {
     return view('welcome');
 });

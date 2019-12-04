@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RegisterEmail;
 use App\Profile;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 
@@ -28,25 +30,42 @@ class UsersController extends Controller
         
         $data['password'] = Hash::make($data['password']);
         $data['superuser'] = User::REGULAR_USER;
-        $data['api_token'] = Str::random(60);
+        // $data['api_token'] = Str::random(60);
 
         $user = User::create($data);
-
+            
         $profile_data = $request->only(['username']);
         $profile_data['user_id'] = $user->id;
-
+        
         Profile::create($profile_data);
 
+        Mail::to($user->email)->send(new RegisterEmail($user->email, $user->username));  
+
+
         return response([
-            'message' => 'Register successfully',
+            'message' => 'Register successfully. Please confirm your email!',
             'data' => $user,
-            'api_token' => $user->api_token
+            // 'api_token' => $user->api_token
         ], 201);
 
     }
 
+    public function emailVerify(Request $request)
+    {
+        $email = $request->email;
+        // dd($email);
+        $user = User::where(['email' => $email])->first();
+        // dd($user);
+        if(!is_null($user)){
+            $user->update([
+                'email_verified' => 1,
+            ]);
+        }
+        return redirect('/');
+    }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
             'email' => 'required',
             'password' => 'required'
@@ -54,6 +73,9 @@ class UsersController extends Controller
 
         if(Auth::attempt($credentials)){
             $user = Auth::user();
+            if(!$user->email_verified){
+                return response(['message' => 'Email not verified'], 401);
+            }
             $user->update(['api_token' => Str::random(60)]);
             return response([
                 'message' => 'Login successfully',
